@@ -5,6 +5,7 @@
   vars:
     debian_image_url: "https://cloud.debian.org/images/cloud/bookworm/20240507-1740/debian-12-genericcloud-amd64-20240507-1740.qcow2"
     debian_image_path: "/root/debian-12-bookworm-cloudinit-template/debian-12.0.0-amd64.qcow2"
+    pve_storage: "local-lvm"
   tasks:
     - name: Create a working directory if it doesn't exist
       ansible.builtin.file:
@@ -19,13 +20,15 @@
     - name: Create template VM
       ansible.builtin.command: qm create 9001 --name "debian-12-bookworm-cloudinit-template" --memory 2048 --net0 virtio,bridge=vmbr0
     - name: Import disk to template VM
-      ansible.builtin.command: qm importdisk 9001 "{{ debian_image_path }}" local-lvm
+      ansible.builtin.command: qm importdisk 9001 "{{ debian_image_path }}" "{{ pve_storage }}"
     - name: Set boot order
       ansible.builtin.command: qm set 9001 --boot c --bootdisk scsi0
     - name: Add cloudinit disk
-      ansible.builtin.command: qm set 9001 --ide2 local-lvm:cloudinit
-    - name: Set serial port
-      ansible.builtin.command: qm set 9001 --serial0 socket --vga serial0
+      ansible.builtin.command: qm set 9001 --ide2 "{{ pve_storage }}:cloudinit"
+    #- name: Set serial port
+    #  ansible.builtin.command: qm set 9001 --serial0 socket --vga serial0
+    - name: Create template
+      ansible.builtin.command: qm template 9001
     
 
 
