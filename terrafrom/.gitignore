@@ -1,0 +1,7 @@
+/*
+!.gitignore
+!main.tf
+!output.tf
+!variables.tf
+!variables.tfvars.sample
+!templates/

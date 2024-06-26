@@ -1,0 +1,39 @@
+---
+- name: Setup debian 12 bookworm cloudinit template VM
+  hosts: all
+  user: root
+  vars:
+    debian_image_url: "https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-genericcloud-amd64.qcow2"
+    debian_image_path: "/root/debian-12-bookworm-cloudinit-template/debian-12.0.0-amd64.qcow2"
+    pve_storage: "local-lvm"
+  tasks:
+    - name: Create a working directory if it doesn't exist
+      ansible.builtin.file:
+        path: /root/debian-12-bookworm-cloudinit-template
+        state: directory
+    - name: Download image
+      ansible.builtin.get_url:
+        url: '{{ debian_image_url }}'
+        dest: "/root/debian-12-bookworm-cloudinit-template/debian-12.0.0-amd64.qcow2"
+    - name: Install qemu-guest-agent and vim with virt-customize
+      ansible.builtin.command: virt-customize -a "{{ debian_image_path }}" --install qemu-guest-agent --install vim  --run-command 'systemctl start qemu-guest-agent.service && systemctl enable qemu-guest-agent.service'
+    - name: Create template VM
+      ansible.builtin.command: qm create 9001 --name "debian-12-bookworm-cloudinit-template" --memory 2048 --net0 virtio,bridge=vmbr0 --scsihw virtio-scsi-pci
+    - name: Import disk to template VM
+      ansible.builtin.command: qm importdisk 9001 "{{ debian_image_path }}" "{{ pve_storage }}"
+    - name: Attach disk
+      ansible.builtin.command: qm set 9001 --scsihw virtio-scsi-pci --scsi0 local-lvm:vm-8100-disk-0  
+    - name: Set boot order
+      ansible.builtin.command: qm set 9001 --boot c --bootdisk scsi0
+    - name: Add cloudinit disk
+      ansible.builtin.command: qm set 9001 --ide2 "{{ pve_storage }}:cloudinit"
+    - name: Set serial port
+      ansible.builtin.command: qm set 9001 --serial0 socket --vga serial0
+    - name: Enable agent
+      ansible.builtin.command: qm set 9001 --agent 1
+    - name: Create template
+      ansible.builtin.command: qm template 9001
+    
+
+
+

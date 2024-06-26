@@ -1,0 +1,44 @@
+pve_host = "192.168.1.100"
+pve_node_name = "pve"
+pve_tls_insecure = true
+
+pvt_key = "~/.ssh/id_k3s"
+template_vm_name = "debian-12-cloud"
+vm_storage = "local-lvm"
+cluster_name = "pulsar"
+node_user = "k3s_admin"
+
+# VM config
+k3s_masters = 1
+k3s_master_mem = 4096
+k3s_master_cores = 2
+k3s_master_disk_size 10
+
+k3s_workers = 2
+k3s_worker_mem = 4096
+k3s_worker_cores = 2
+k3s_master_disk_size = 10
+
+# Networking
+gateway = "192.168.3.1"
+networkrange = 24
+
+master_ips = [
+  "192.168.3.101",
+  "192.168.3.102",
+  "192.168.3.103",
+]
+
+worker_ips = [
+  "192.168.3.121",
+  "192.168.3.122",
+  "192.168.3.123",
+  "192.168.3.124",
+  "192.168.3.125",
+]
+
+# Ansible config
+timezone = "Africa/Johannesburg"
+apiserver_endpoint = 192.168.3.100
+k3s_token = "some-SUPER-DEDEUPER-secret-password"
+metal_lb_ip_range = "192.168.3.140-192.168.3.150"
