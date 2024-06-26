@@ -1,3 +1,7 @@
+## Based on
+ - https://technotim.live/posts/k3s-etcd-ansible/
+ - https://github.com/NatiSayada/k3s-proxmox-terraform-ansible
+
 ## Packages needed from apt:
  - ansible
  - sshpass
