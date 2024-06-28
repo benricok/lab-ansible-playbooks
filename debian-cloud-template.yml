@@ -12,7 +12,7 @@
       ansible.builtin.file:
         path: /root/debian-12-bookworm-cloudinit-template
         state: directory
-    - name: Download image latest debian cloudinit image
+    - name: Download latest debian cloudinit image
       ansible.builtin.get_url:
         url: '{{ debian_image_url }}'
         dest: "/root/debian-12-bookworm-cloudinit-template/debian-12.0.0-amd64.qcow2"
